@@ -9,12 +9,16 @@ def card_time( generation_time, overhead_time, cards_in_final_set )
   generation_time + ((cards_in_final_set - 1) * overhead_time)
 end
 
+def card_times_for_final_set_n( cards_in_final_set )
+  (0...MAX_CARDS).map { |i|
+    card_time( GENERATION[i], OVERHEAD[i], cards_in_final_set )
+  }.sort.slice(0,cards_in_final_set).inject(:+)
+end
+
 def card_times_for_all_final_set_sizes
-  (1..MAX_CARDS).each_with_object({}) do |cards_in_final_set, hash|
-    hash[cards_in_final_set] = (0...MAX_CARDS).map { |i|
-      card_time( GENERATION[i], OVERHEAD[i], cards_in_final_set )
-    }.sort.slice(0,cards_in_final_set).inject(:+)
-  end
+  Hash[(1..MAX_CARDS).map { |cards_in_final_set|
+    [cards_in_final_set, card_times_for_final_set_n(cards_in_final_set)]
+  }]
 end
 
 def max_cards_in_final_set_under_budget( budget )
